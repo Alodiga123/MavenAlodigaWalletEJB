@@ -1968,7 +1968,6 @@ public class UtilsEJBImp extends AbstractWalletEJB implements UtilsEJB, UtilsEJB
         return affiliationRequestList;
     }
     
-    @Override
     public AffiliationRequest getAffiliationRequestByNumberRequest(String code) throws RegisterNotFoundException, NullParameterException, GeneralException, EmptyListException {
         AffiliationRequest affiliationRequest = new AffiliationRequest();
         try {
