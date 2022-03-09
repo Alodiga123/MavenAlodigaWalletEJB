@@ -44,6 +44,7 @@ import com.alodiga.wallet.common.enumeraciones.StatusTransactionApproveRequestE;
 import com.alodiga.wallet.common.enumeraciones.TransactionSourceE;
 import com.alodiga.wallet.common.enumeraciones.TransactionTypeE;
 import com.alodiga.wallet.common.model.TransactionApproveRequest;
+import com.alodiga.wallet.common.model.UserHasProduct;
 import com.alodiga.wallet.common.utils.Constants;
 import com.alodiga.wallet.common.utils.EJBServiceLocator;
 import com.alodiga.wallet.common.utils.EjbConstants;
@@ -112,6 +113,26 @@ public class ProductEJBImp extends AbstractWalletEJB implements ProductEJB, Prod
             query = createQuery("SELECT p FROM Product p WHERE p.enterprise.id = ?1");
             query.setParameter("1", enterpriseId);
             products = query.setHint("toplink.refresh", "true").getResultList();
+        } catch (Exception e) {
+            throw new GeneralException(logger, sysError.format(EjbConstants.ERR_GENERAL_EXCEPTION, this.getClass(), getMethodName(), e.getMessage()), null);
+        }
+        if (products.isEmpty()) {
+            throw new EmptyListException(logger, sysError.format(EjbConstants.ERR_EMPTY_LIST_EXCEPTION, this.getClass(), getMethodName()), null);
+        }
+        return products;
+    }
+    
+    public List<Product> getProductsByWalletUser(Long walletUserId) throws GeneralException, EmptyListException, NullParameterException {
+        List<UserHasProduct> userHasProducts = new ArrayList<UserHasProduct>();
+        List<Product> products = new ArrayList<Product>();
+        try {
+            userHasProducts = (List<UserHasProduct>) entityManager.createNamedQuery("UserHasProduct.findByUserSourceIdAllProduct", UserHasProduct.class).setParameter("userSourceId", walletUserId).getResultList();
+
+            for (UserHasProduct uhp : userHasProducts) {
+                Product product = new Product();
+                product = entityManager.find(Product.class, uhp.getProductId());
+                products.add(product);
+            }
         } catch (Exception e) {
             throw new GeneralException(logger, sysError.format(EjbConstants.ERR_GENERAL_EXCEPTION, this.getClass(), getMethodName(), e.getMessage()), null);
         }
