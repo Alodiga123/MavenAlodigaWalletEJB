@@ -434,7 +434,6 @@ public class UtilsEJBImp extends AbstractWalletEJB implements UtilsEJB, UtilsEJB
         return bank;
     }
     
-    @Override
     public List<Bank> getBankByCountry(Long countryId) throws EmptyListException, GeneralException, NullParameterException {
         List<Bank> bankList = new ArrayList<Bank>();
         try {
