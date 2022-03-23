@@ -26,6 +26,7 @@ import com.alodiga.wallet.common.genericEJB.AbstractWalletEJB;
 import com.alodiga.wallet.common.genericEJB.EJBRequest;
 import com.alodiga.wallet.common.genericEJB.WalletContextInterceptor;
 import com.alodiga.wallet.common.genericEJB.WalletLoggerInterceptor;
+import com.alodiga.wallet.common.model.AccountBank;
 import com.alodiga.wallet.common.model.Bank;
 import com.alodiga.wallet.common.model.BankOperation;
 import com.alodiga.wallet.common.model.BankOperationMode;
@@ -1969,6 +1970,20 @@ public class UtilsEJBImp extends AbstractWalletEJB implements UtilsEJB, UtilsEJB
         query.setParameter("3", accountNumber);        
         List result = (List) query.setHint("toplink.refresh", "true").getResultList();
         return result.get(0) != null ? (Long) result.get(0) : 0l;
+    }
+
+    @Override
+    public List<AccountBank> getAccountBankByBankByUser(Long bankId, Long userId) throws EmptyListException, GeneralException, NullParameterException {
+        List<AccountBank> accountBankList = new ArrayList<AccountBank>();
+        try {
+            accountBankList = (List<AccountBank>) entityManager.createNamedQuery("AccountBank.accountBankByBankByUser", AccountBank.class).setParameter("bankId", bankId).setParameter("unifiedRegistryId", userId).getResultList();
+        } catch (Exception e) {
+            throw new GeneralException(logger, sysError.format(EjbConstants.ERR_GENERAL_EXCEPTION, this.getClass(), getMethodName(), e.getMessage()), null);
+        }
+        if (accountBankList.isEmpty()) {
+            throw new EmptyListException(logger, sysError.format(EjbConstants.ERR_EMPTY_LIST_EXCEPTION, this.getClass(), getMethodName()), null);
+        }
+        return accountBankList;
     }
 
     @Override
